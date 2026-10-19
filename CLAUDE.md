@@ -1,4 +1,7 @@
-# demo-video-pipeline
+# jitsuen
+
+実演 — a narrated product demo, built by Claude Code from a brief and a folder of
+screenshots and screen recordings.
 
 Remotion 4.0.536 + VOICEVOX 0.25.2. `research.md` has the full study; `plan.md` the design and
 the implementation checklist. `.claude/skills/demo-video/` drives a build.
