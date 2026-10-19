@@ -1,0 +1,9 @@
+[tools]
+node = "24.20.0"
+pnpm = "11.25.0"
+
+[env]
+# Keep the VOICEVOX endpoint in one place; scripts/lib/voicevox.ts reads VOICEVOX_URL
+# and scripts/voicevox-engine.sh reads VOICEVOX_PORT.
+VOICEVOX_PORT = "50021"
+VOICEVOX_URL = "http://127.0.0.1:50021"

@@ -1,0 +1,11 @@
+# pnpm 11 no longer reads the `pnpm` field in package.json (it warns and ignores it);
+# settings live here instead. pnpm 10+ blocks build (postinstall) scripts by default and
+# exits non-zero until every skipped build is explicitly decided, so each package below
+# is an explicit true/false rather than an allowlist of names.
+#
+# esbuild: false matches what `create-video` itself wrote into package.json
+# (`allowScripts: {esbuild: false}`). esbuild 0.28 resolves its platform binary through
+# optionalDependencies, which pnpm installs directly, so the postinstall has nothing to
+# do here. Verified by an actual `remotion bundle` + render, not assumed.
+allowBuilds:
+  esbuild: false
