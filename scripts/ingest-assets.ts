@@ -2,9 +2,9 @@ import {copyFile, mkdir, readdir, rm, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {ALL_FORMATS, FilePathSource, Input} from 'mediabunny';
 
-const DIR = 'input/assets';
+const DIR = 'video/assets';
 // Scene components reference assets as staticFile('assets/<file>'), which Remotion resolves
-// inside public/. The human's material lives in input/assets/, so ingest mirrors it across;
+// inside public/. The human's material lives in video/assets/, so ingest mirrors it across;
 // public/assets is generated and gitignored. Copied rather than symlinked so that bundle()
 // sees real files no matter how it walks public/.
 const PUBLIC_DIR = 'public/assets';
@@ -28,7 +28,7 @@ const main = async () => {
   const files = (await readdir(DIR)).filter((f) => !f.startsWith('.'));
   const assets: Record<string, Asset> = {};
 
-  // Rebuilt from scratch, so a file deleted from input/assets/ stops being renderable
+  // Rebuilt from scratch, so a file deleted from video/assets/ stops being renderable
   // instead of lingering in public/ and silently still working.
   await rm(PUBLIC_DIR, {recursive: true, force: true});
   await mkdir(PUBLIC_DIR, {recursive: true});
@@ -70,9 +70,9 @@ const main = async () => {
     }
   }
 
-  await writeFile('input/assets.json', JSON.stringify({assets}, null, 2) + '\n');
+  await writeFile('video/assets.json', JSON.stringify({assets}, null, 2) + '\n');
   console.log(
-    `probed ${Object.keys(assets).length} assets → input/assets.json ` +
+    `probed ${Object.keys(assets).length} assets → video/assets.json ` +
       `(mirrored to ${PUBLIC_DIR}/ for staticFile)`,
   );
 };

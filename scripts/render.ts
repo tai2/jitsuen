@@ -30,9 +30,9 @@ const credits = async (styleId: number) => {
 };
 
 const main = async () => {
-  const sb = StoryboardSchema.parse(JSON.parse(await readFile('input/storyboard.json', 'utf8')));
+  const sb = StoryboardSchema.parse(JSON.parse(await readFile('video/storyboard.json', 'utf8')));
   const narration = JSON.parse(
-    await readFile('src/generated/narration.json', 'utf8'),
+    await readFile('video/narration.json', 'utf8'),
   ) as NarrationManifest;
 
   await mkdir('out', {recursive: true});

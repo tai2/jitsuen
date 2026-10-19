@@ -43,7 +43,7 @@ TBD
 Optional. Leave it empty and you get the default theme ("sumi": warm ink charcoal,
 washi off-white, one moss accent).
 
-THE EASIEST WAY: drop screenshots into `input/reference/` — your website, your app,
+THE EASIEST WAY: drop screenshots into `video/reference/` — your website, your app,
 a deck, a video still, anything whose look you want matched — and write "match the
 reference" below. Those images get read directly: palette, type scale, how much
 contrast, how much space. A picture settles this faster than adjectives.
@@ -54,7 +54,7 @@ Otherwise, say it in words. Useful things to pin down:
   - the feeling: calm and spare / bold and loud / technical and dense / warm and soft
   - anything to avoid
 
-Whatever is decided here ends up in `src/theme.ts`, which is the only place the visual
+Whatever is decided here ends up in `video/tokens.ts`, which is the only place the visual
 identity lives. Changing it restyles every scene at once.
 -->
 

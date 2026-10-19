@@ -1,22 +1,12 @@
 import {readFile} from 'node:fs/promises';
 import {buildTimeline} from '../src/timeline.ts';
-import {checkCompositionConfig} from './lib/composition-config.ts';
 import {StoryboardSchema} from './lib/storyboard-schema.ts';
 
-const TSX = 'src/DemoVideo.tsx';
+const TSX = 'video/DemoVideo.tsx';
 
 const main = async () => {
-  const sb = StoryboardSchema.parse(JSON.parse(await readFile('input/storyboard.json', 'utf8')));
+  const sb = StoryboardSchema.parse(JSON.parse(await readFile('video/storyboard.json', 'utf8')));
 
-  // Before anything else: the expected timeline below is built from sb.fps, so a format
-  // that disagrees with src/Root.tsx would make every comparison that follows internally
-  // consistent and still wrong. This is the only check that catches that.
-  const configProblems = await checkCompositionConfig(sb);
-  if (configProblems.length > 0) {
-    console.error(configProblems.map((p) => `✗ ${p}`).join('\n'));
-    console.error('\nReconcile the format, then re-run. src/Root.tsx governs the render.');
-    process.exit(1);
-  }
 
   const tsx = await readFile(TSX, 'utf8');
   const expected = buildTimeline(sb.scenes, sb.fps);

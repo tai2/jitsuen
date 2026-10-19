@@ -1,4 +1,4 @@
-import narration from './generated/narration.json' with {type: 'json'};
+import narration from '../video/narration.json' with {type: 'json'};
 
 export type SceneTiming = {
   id: string;

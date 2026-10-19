@@ -1,6 +1,6 @@
 ---
 name: demo-video
-description: Build a narrated Japanese demo video from input/brief.md and input/assets/ using Remotion + VOICEVOX
+description: Build a narrated Japanese demo video from video/brief.md and video/assets/ using Remotion + VOICEVOX
 argument-hint: [optional extra direction, e.g. "60 seconds, focus on the editor"]
 allowed-tools: Read, Glob, Grep, Edit, Write, Bash(pnpm:*), Bash(scripts/voicevox-engine.sh:*), Bash(mise:*)
 ---
@@ -13,13 +13,13 @@ dependency set is fixed and installing into it is not part of building a video. 
 reports the wrong Node or pnpm version, run `mise install`; do not work around it.
 
 ## 1. Read the material
-- `input/brief.md` — the human's intent. Treat it as the source of truth for *what to say*.
-- `input/assets/` — list it. Then run `pnpm ingest` and read `input/assets.json` for
+- `video/brief.md` — the human's intent. Treat it as the source of truth for *what to say*.
+- `video/assets/` — list it. Then run `pnpm ingest` and read `video/assets.json` for
   real durations and dimensions. `pnpm ingest` also mirrors the files into `public/assets/`,
   which is where `staticFile()` reads them from — so re-run it after adding material.
-- `input/reference/` — if it holds anything, **look at the images**. They are the human's
+- `video/reference/` — if it holds anything, **look at the images**. They are the human's
   visual reference, and stage 3 turns them into tokens.
-- `src/generated/narration.json`, if present — the previous run. Reuse unchanged lines.
+- `video/narration.json`, if present — the previous run. Reuse unchanged lines.
 
 ## 2. Start the engine
 `pnpm engine`. It is idempotent; it prints the engine version when ready.
@@ -31,13 +31,13 @@ archives them to `out/<project>.credits.md` only *after* the video exists.
 
 ## 3. Set the theme
 
-Read the brief's "Look and feel" section and anything in `input/reference/`.
+Read the brief's "Look and feel" section and anything in `video/reference/`.
 
-- **Nothing there?** Leave `src/theme.ts` alone. The default is deliberate, not a placeholder.
+- **Nothing there?** Leave `video/tokens.ts` alone. The default is deliberate, not a placeholder.
 - **A reference image?** Open it and pull out: the background and whether it is light or
   dark, the text colour, the single strongest accent, how large the type runs relative to
   the frame, and how much empty space the design is comfortable with. Write those into
-  `src/theme.ts` — `surfaces`, `accent`, and `sizes`. Do not restyle the scene components;
+  `video/tokens.ts` — `surfaces`, `accent`, and `sizes`. Do not restyle the scene components;
   if a scene needs a colour the theme does not have, add the token rather than a literal.
 - **Words only?** Same destination, your judgement for the values.
 
@@ -53,7 +53,7 @@ Two things to hold on to while matching:
 Then render one still to look at it — `pnpm remotion still DemoVideo out/theme-check.png
 --frame=60` — before building the whole video on it.
 
-## 4. Author input/storyboard.json
+## 4. Author video/storyboard.json
 Follow `storyboard.md` in this skill folder for the schema and the writing rules.
 Key judgement calls that are YOURS, not the script's:
 - scene count and order (aim for 6–12 scenes for a 2–3 minute video),
@@ -70,9 +70,9 @@ than the beat needs, edit the text (not `speed`) and re-run — it only
 re-synthesizes changed lines. Read any `!` warnings: an unmatched `cues` entry prints the
 actual spoken moras to copy from.
 
-## 6. Author src/DemoVideo.tsx
+## 6. Author video/DemoVideo.tsx
 Write one authored JSX block per scene, with timing as **literal numbers** taken from
-`pnpm check`'s output. Paste caption arrays inline from `src/generated/narration.json`.
+`pnpm check`'s output. Paste caption arrays inline from `video/narration.json`.
 Never write a `.map()` over scenes, never hoist `defaultProps` or `interpolate()` into a
 variable — it breaks Studio write-back. See CLAUDE.md.
 
@@ -85,7 +85,7 @@ Run `pnpm check` until it passes, then `pnpm lint`.
 a render is minutes, an audio re-synthesis is seconds.
 
 If they edited scene timing in Studio, `pnpm check` will now fail: that is the human
-overriding you. Update `input/storyboard.json`'s `padBefore`/`padAfter`/`minSeconds` to
+overriding you. Update `video/storyboard.json`'s `padBefore`/`padAfter`/`minSeconds` to
 match their edit rather than reverting their change.
 
 ## 8. Render

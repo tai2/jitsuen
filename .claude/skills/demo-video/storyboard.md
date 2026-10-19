@@ -1,4 +1,4 @@
-# Authoring `input/storyboard.json`
+# Authoring `video/storyboard.json`
 
 The Zod contract is `scripts/lib/storyboard-schema.ts`. It is `.strict()` everywhere, so an
 unrecognised key is an error, not a silently ignored field. `pnpm validate` prints the exact
@@ -21,7 +21,7 @@ path of anything wrong (`scenes.3.bullets`), so let it correct you rather than g
 ## Look
 
 The storyboard carries no design fields on purpose. Colour, type and spacing live in
-`src/theme.ts` and apply to every scene at once — see SKILL.md stage 3. The one visual choice
+`video/tokens.ts` and apply to every scene at once — see SKILL.md stage 3. The one visual choice
 a scene makes for itself is `surface`, authored on the JSX node in `DemoVideo.tsx`:
 `ink` (default, dark) or `paper` (light), useful when a run of light product screenshots
 would otherwise fight a dark frame.

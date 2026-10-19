@@ -46,14 +46,13 @@ const measure = async (path: string) => {
 };
 
 const main = async () => {
-  const sb = StoryboardSchema.parse(JSON.parse(await readFile('input/storyboard.json', 'utf8')));
+  const sb = StoryboardSchema.parse(JSON.parse(await readFile('video/storyboard.json', 'utf8')));
   const engineVersion = await getVersion();
   const coreVersions = await getCoreVersions();
 
   const outDir = join('public/voiceover', sb.project);
   await mkdir(outDir, {recursive: true});
   await mkdir(CACHE, {recursive: true});
-  await mkdir('src/generated', {recursive: true});
 
   // Pay the model-load cost once, up front, rather than on the first synthesis.
   await initializeSpeaker(sb.voice.styleId);
@@ -155,14 +154,14 @@ const main = async () => {
   }
 
   await writeFile(
-    'src/generated/narration.json',
+    'video/narration.json',
     JSON.stringify(
       {engine: {version: engineVersion, coreVersions}, project: sb.project, scenes},
       null,
       2,
     ) + '\n',
   );
-  console.log(`\n${misses} synthesized, ${hits} cached → src/generated/narration.json`);
+  console.log(`\n${misses} synthesized, ${hits} cached → video/narration.json`);
 };
 
 await main();

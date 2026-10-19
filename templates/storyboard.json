@@ -1,0 +1,31 @@
+{
+  "project": "sample",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "voice": {
+    "styleId": 3,
+    "speed": 1.0,
+    "sampleRate": 48000
+  },
+  "readings": {},
+  "showCaptions": true,
+  "scenes": [
+    {
+      "id": "opening",
+      "type": "title",
+      "title": "タイトル",
+      "subtitle": "サブタイトル",
+      "narration": null,
+      "minSeconds": 3
+    },
+    {
+      "id": "outro",
+      "type": "outro",
+      "message": "おわり",
+      "url": "example.com",
+      "narration": null,
+      "minSeconds": 2
+    }
+  ]
+}

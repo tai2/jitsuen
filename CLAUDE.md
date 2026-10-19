@@ -8,7 +8,14 @@ the implementation checklist. `.claude/skills/demo-video/` drives a build.
 
 Claude Code is the planner and author; every mechanical step is a deterministic script.
 `pnpm ingest` → *you author the storyboard* → `pnpm validate` → `pnpm voice` →
-*you author `src/DemoVideo.tsx`* → `pnpm check` → `pnpm lint` → `pnpm studio` → `pnpm render`.
+*you author `video/DemoVideo.tsx`* → `pnpm check` → `pnpm lint` → `pnpm studio` → `pnpm render`.
+
+## Layout
+
+`src/` and `scripts/` are the TOOL and are tracked. `video/` is ONE video — brief,
+storyboard, narration manifest, theme tokens, authored composition, source media — and is
+gitignored in full, because a brief and a narration script are usually the client's. A fresh
+clone has no `video/` and will not compile until `pnpm new` seeds it from `templates/`.
 
 ## Never
 
@@ -34,29 +41,30 @@ Claude Code is the planner and author; every mechanical step is a deterministic 
   phrases** and would synthesize silence, so `synthesize.ts` throws on that instead.
 - Never name a scene prop `playbackRate`, `trimBefore`, `from`, `durationInFrames` or `name` —
   `Interactive` reserves them for the surrounding Sequence.
-- Never hardcode a colour, font size or margin in a scene component. Every one comes from
-  `src/theme.ts`; if a token is missing, add it there. A literal hex in a scene is a value the
-  next reference-match will silently fail to change.
+- Never hardcode a colour, font size or margin in a scene component. Values come from
+  `video/tokens.ts`, mechanism from `src/theme.ts`; if a token is missing, add it. A literal
+  hex in a scene is a value the next reference-match will silently fail to change.
+- Never put per-video content under `src/`. If it describes one video rather than the tool,
+  it belongs in `video/`, which is gitignored. This is how a client's narration script ends
+  up in a public repo.
 
 ## Always
 
 - `trimBefore` does not delay audio. Use `from`.
 - Derive frames from `useVideoConfig().fps` inline, never a module-level FPS constant.
-  The one exception is `COMPOSITION_FPS` in `src/metadata.ts`, which `calculateMetadata`
-  needs because it cannot call hooks — keep it equal to the `fps` on the `<Composition>`.
-- `width`/`height`/`fps` are hand-mirrored in three places: `input/storyboard.json`, the
-  `<Composition>` registrations in `src/Root.tsx`, and `COMPOSITION_FPS`. `Root.tsx` governs
-  the render; the scripts bake frame numbers from the storyboard's `fps`. Change one and you
-  change all three — `pnpm validate` and `pnpm check` both refuse a mismatch before anything
-  else (`scripts/lib/composition-config.ts`), because an fps mismatch is self-consistent to
-  every other check and only surfaces as a desynced mp4.
+  The one exception is `src/metadata.ts`, which cannot call hooks and so reads
+  `video/storyboard.json` — the same single source `src/Root.tsx` registers from.
+- `video/storyboard.json` is the only place `width`, `height` and `fps` are written.
+  `src/Root.tsx` derives the `<Composition>` from it. Never reintroduce a mirrored literal.
 - Round each timeline boundary from a running total of seconds. Never sum per-scene
   `Math.ceil` — measured at 27 frames (0.9 s) of drift over a 5-minute video.
 - Give every scene node `name="<scene id>"`. `pnpm check` finds it by that and nothing else.
-- `src/generated/narration.json` is the timing lockfile. It is tracked. Commit it.
+- `video/narration.json` is the timing lockfile for the current video. It is NOT tracked.
 - `mise.toml` and `pnpm-lock.yaml` are tracked too. Commit lockfile changes separately.
 - `public/assets/` and `public/voiceover/` are generated. Re-run `pnpm ingest` after adding
   material; never edit them by hand.
+- Changing the default look for FUTURE videos means editing `templates/tokens.ts`;
+  `video/tokens.ts` only affects the video in front of you.
 - Theme lengths are authored for a 1080px short edge and scaled by `useMetrics()`. Check the
   longest real string against `width − 2 × margin` before raising the type scale.
 - `remotion.config.ts` does NOT apply to the Node APIs in `scripts/render.ts`. Any option that

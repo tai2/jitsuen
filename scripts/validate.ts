@@ -1,23 +1,13 @@
 import {readFile} from 'node:fs/promises';
 import type {Asset} from './ingest-assets.ts';
-import {checkCompositionConfig} from './lib/composition-config.ts';
 import {StoryboardSchema} from './lib/storyboard-schema.ts';
 import {getSpeakers} from './lib/voicevox.ts';
 
 const main = async () => {
-  const sb = StoryboardSchema.parse(JSON.parse(await readFile('input/storyboard.json', 'utf8')));
+  const sb = StoryboardSchema.parse(JSON.parse(await readFile('video/storyboard.json', 'utf8')));
 
-  // First gate, and a hard stop: `pnpm voice` bakes caption cue frames at sb.fps and
-  // `pnpm check` derives the expected timeline from it, so validating anything else
-  // against a format the render will not use is validating the wrong video.
-  const configProblems = await checkCompositionConfig(sb);
-  if (configProblems.length > 0) {
-    console.error(configProblems.map((p) => `✗ ${p}`).join('\n'));
-    console.error('\nReconcile the format, then re-run. src/Root.tsx governs the render.');
-    process.exit(1);
-  }
 
-  const {assets} = JSON.parse(await readFile('input/assets.json', 'utf8')) as {
+  const {assets} = JSON.parse(await readFile('video/assets.json', 'utf8')) as {
     assets: Record<string, Asset>;
   };
   const errors: string[] = [];
@@ -30,7 +20,7 @@ const main = async () => {
     if ('asset' in scene) {
       const a = assets[scene.asset];
       if (!a) {
-        errors.push(`scene ${scene.id}: asset "${scene.asset}" not in input/assets.json`);
+        errors.push(`scene ${scene.id}: asset "${scene.asset}" not in video/assets.json`);
       } else if (scene.type === 'screencast') {
         if (a.kind !== 'video') {
           errors.push(`scene ${scene.id}: screencast asset "${scene.asset}" is not a video`);

@@ -17,7 +17,8 @@ public/voiceover
 # Mirror of input/assets/, rebuilt by `pnpm ingest` so staticFile() can reach the media.
 public/assets
 
-# Human input material, all of it. The brief, the storyboard and the reference images are
-# project-specific and frequently confidential; the media is large. Nothing here belongs in
-# a shared repo. `pnpm reset:input` rebuilds the folder from templates/.
-input/
+# Everything about the CURRENT video: the brief, the storyboard, the narration manifest,
+# the theme tokens, the authored composition and the source media. It is project-specific
+# and frequently confidential — a brief and a narration script are usually the client's,
+# not the tool's — so none of it is tracked. `pnpm new` rebuilds it from templates/.
+video/

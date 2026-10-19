@@ -1,0 +1,11 @@
+{
+  "engine": {
+    "version": "0.0.0",
+    "coreVersions": ["0.0.0"]
+  },
+  "project": "sample",
+  "scenes": {
+    "opening": {"wav": null, "text": null, "durationSec": 0, "captions": [], "cues": {}},
+    "outro": {"wav": null, "text": null, "durationSec": 0, "captions": [], "cues": {}}
+  }
+}

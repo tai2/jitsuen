@@ -1,4 +1,5 @@
 import type {CalculateMetadataFunction} from 'remotion';
+import storyboard from '../video/storyboard.json' with {type: 'json'};
 import {buildTimeline, totalFrames, type SceneSpec, type SceneTiming} from './timeline.ts';
 
 export type DemoVideoProps = {
@@ -6,11 +7,15 @@ export type DemoVideoProps = {
   readonly timeline?: SceneTiming[];
 };
 
-/** Must match the fps on the <Composition> registration — calculateMetadata has no hooks. */
-const COMPOSITION_FPS = 30;
+/**
+ * calculateMetadata cannot call hooks, so it cannot read useVideoConfig(). It reads the
+ * storyboard instead — the same single source the <Composition> registration uses, so the
+ * two cannot drift apart.
+ */
+const {fps} = storyboard;
 
 export const calculateDemoMetadata: CalculateMetadataFunction<DemoVideoProps> = ({props}) => {
-  const timeline = buildTimeline(props.scenes, COMPOSITION_FPS);
+  const timeline = buildTimeline(props.scenes, fps);
   return {
     durationInFrames: totalFrames(timeline),
     props: {...props, timeline},
