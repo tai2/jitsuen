@@ -25,7 +25,7 @@
     "typecheck": "tsc",
     "lint": "hyperframes lint . && eslint src scripts && tsc",
     "browser": "hyperframes browser ensure",
-    "audit": "hyperframes check .",
+    "verify": "hyperframes check .",
     "clean": "hyperframes clean"
   },
   "dependencies": {

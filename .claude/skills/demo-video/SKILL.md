@@ -106,7 +106,7 @@ Run `pnpm check` until it passes, then `pnpm lint`.
 `pnpm studio` (`hyperframes preview`) and tell the human to look at it. Do not render until
 they approve — a render is minutes, an audio re-synthesis is seconds.
 
-`pnpm audit` (`hyperframes check`) is the automated half: lint, runtime errors, layout
+`pnpm verify` (`hyperframes check`) is the automated half: lint, runtime errors, layout
 occlusion, frozen motion and WCAG contrast in one pass. Run it before handing over.
 
 Two different kinds of edit come back from Studio, and they are **not** fixed the same way:
