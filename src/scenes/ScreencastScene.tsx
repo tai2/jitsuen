@@ -31,7 +31,10 @@ const ScreencastSceneInner = ({
       // Duck hard under the narration rather than competing with it.
       volume={keepClipAudio ? 0.15 : 0}
       objectFit="contain"
-      style={{width: '100%', height: '100%'}}
+      // Positioned, not in flow: the backdrop above is `position: absolute`, and a
+      // positioned sibling paints over every non-positioned one regardless of DOM order.
+      // Left static, the clip renders correctly and is then covered by the opaque wash.
+      style={{position: 'absolute', inset: 0, width: '100%', height: '100%'}}
       // Make a codec fallback LOUD instead of a silently degraded render.
         onError={() => 'fail'}
       />

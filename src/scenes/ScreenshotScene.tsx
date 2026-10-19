@@ -36,6 +36,11 @@ const ScreenshotSceneInner = ({
       <Img
         src={staticFile(`assets/${asset}`)}
         style={{
+          // Positioned, not in flow: the backdrop above is `position: absolute`, and a
+          // positioned sibling paints over every non-positioned one regardless of DOM
+          // order. Left static, the image is drawn and then covered by the opaque wash.
+          position: 'absolute',
+          inset: 0,
           width: '100%',
           height: '100%',
           // objectFit: 'contain' is why image dimensions are never probed in Node.
