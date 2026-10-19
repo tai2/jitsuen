@@ -17,6 +17,7 @@
     "engine:stop": "scripts/voicevox-engine.sh stop",
     "voices": "node --experimental-strip-types scripts/list-voices.ts",
     "ingest": "node --experimental-strip-types scripts/ingest-assets.ts",
+    "reset:input": "node --experimental-strip-types scripts/reset-input.ts",
     "validate": "node --experimental-strip-types scripts/validate.ts",
     "voice": "node --experimental-strip-types scripts/synthesize.ts",
     "check": "node --experimental-strip-types scripts/check-timing.ts",

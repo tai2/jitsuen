@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    // ES2023 for Array.prototype.at() and String.prototype.replaceAll(), both used in the
+    // timing code. DOM/fetch types come from @types/web, so no "DOM" lib entry here.
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
+    // The scripts run under `node --experimental-strip-types`, which requires explicit
+    // .ts/.tsx import specifiers. Permitted because this project only ever type-checks.
+    "allowImportingTsExtensions": true,
+    // src/timeline.ts imports src/generated/narration.json.
+    "resolveJsonModule": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true
+  },
+  "exclude": ["remotion.config.ts", ".cache", "node_modules"]
+}
