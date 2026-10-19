@@ -1,5 +1,5 @@
 import {createHash} from 'node:crypto';
-import {access, copyFile, mkdir, readFile, writeFile} from 'node:fs/promises';
+import {access, copyFile, mkdir, readFile, rm, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {ALL_FORMATS, FilePathSource, Input} from 'mediabunny';
 import type {Caption} from './lib/mora-timing.ts';
@@ -50,7 +50,12 @@ const main = async () => {
   const engineVersion = await getVersion();
   const coreVersions = await getCoreVersions();
 
-  const outDir = join('public/voiceover', sb.project);
+  const outDir = join('assets/voiceover', sb.project);
+  // Rebuilt from scratch, mirroring ingest-assets.ts. Without this the directory only ever
+  // grows: a renamed or deleted scene leaves its WAV behind, every orphan is served and
+  // bundled into the render, and `pnpm voice` quietly stops being a description of the
+  // storyboard. The synthesis cache under .cache makes a rebuild nearly free.
+  await rm(outDir, {recursive: true, force: true});
   await mkdir(outDir, {recursive: true});
   await mkdir(CACHE, {recursive: true});
 
@@ -143,8 +148,9 @@ const main = async () => {
     }
 
     scenes[scene.id] = {
-      // staticFile() path, no leading slash.
-      wav: `voiceover/${sb.project}/${scene.id}.wav`,
+      // Project-root-relative, no leading slash: the composition resolves it against
+      // /index.html, like every other path it loads.
+      wav: `assets/voiceover/${sb.project}/${scene.id}.wav`,
       text,
       durationSec,
       captions: toCaptions(query, {enableInterrogativeUpspeak: UPSPEAK, sourceText: text}),

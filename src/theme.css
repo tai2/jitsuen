@@ -1,0 +1,353 @@
+/*
+ * Theme MECHANISM. The values live in video/tokens.css, because a palette and a type scale
+ * belong to one video, while the scaling rule and the classes below belong to the tool.
+ *
+ * Nothing in this file may contain a literal colour, font size or margin. If a value is
+ * missing, add a token to video/tokens.css — a literal here is a value the next
+ * reference-match will silently fail to change.
+ */
+
+/*
+ * SHORT-EDGE SCALING — the CSS equivalent of the old useMetrics() hook.
+ *
+ * Every --size-* in video/tokens.css is authored for a 1080px short edge and multiplied by
+ * --k here. Scaling on the short edge rather than the width is what makes one set of
+ * numbers work for both a 1920x1080 landscape video and a 1080x2348 portrait one: type
+ * size tracks viewing distance, which follows the short edge in either orientation.
+ *
+ * --vw / --vh MUST be set on :root by the authored composition, not on #stage. Custom
+ * properties inherit downward only, so a --vw declared on #stage is invisible to a --k
+ * computed here, and every length below would silently become invalid and fall back.
+ *
+ * The `* 1px` is load-bearing: --size-* are unitless, and round(<number>, 1px) mixes types
+ * and drops the whole declaration. max(1px, ...) mirrors the old Math.max(1, ...) floor.
+ */
+:root {
+  --k: calc(min(var(--vw), var(--vh)) / var(--short-edge));
+
+  --display: max(1px, round(calc(var(--size-display) * var(--k) * 1px), 1px));
+  --title: max(1px, round(calc(var(--size-title) * var(--k) * 1px), 1px));
+  --heading: max(1px, round(calc(var(--size-heading) * var(--k) * 1px), 1px));
+  --body: max(1px, round(calc(var(--size-body) * var(--k) * 1px), 1px));
+  --label: max(1px, round(calc(var(--size-label) * var(--k) * 1px), 1px));
+  --caption-text-size: max(1px, round(calc(var(--size-caption-text) * var(--k) * 1px), 1px));
+  --margin: max(1px, round(calc(var(--size-margin) * var(--k) * 1px), 1px));
+  --gap: max(1px, round(calc(var(--size-gap) * var(--k) * 1px), 1px));
+  --marker-width: max(1px, round(calc(var(--size-marker-width) * var(--k) * 1px), 1px));
+  --hairline: max(1px, round(calc(var(--size-hairline) * var(--k) * 1px), 1px));
+  --lower-third: max(1px, round(calc(var(--size-lower-third) * var(--k) * 1px), 1px));
+  --caption-padding-block: max(1px, round(calc(var(--size-caption-padding-block) * var(--k) * 1px), 1px));
+  --caption-padding-inline: max(1px, round(calc(var(--size-caption-padding-inline) * var(--k) * 1px), 1px));
+  --caption-radius: max(1px, round(calc(var(--size-caption-radius) * var(--k) * 1px), 1px));
+  --caption-zone-width: max(1px, round(calc(var(--size-caption-zone-width) * var(--k) * 1px), 1px));
+  --caption-zone-bottom: max(1px, round(calc(var(--size-caption-zone-bottom) * var(--k) * 1px), 1px));
+  --title-marker-height: max(1px, round(calc(var(--size-title-marker-height) * var(--k) * 1px), 1px));
+  --hairline-width: max(1px, round(calc(var(--size-hairline-width) * var(--k) * 1px), 1px));
+
+  /* Typography constants — mechanism, not identity, so they stay here. */
+  /*
+   * No system fallback before the generic. The bundled face is guaranteed present —
+   * `pnpm ingest` copies it and the lint rule `font_family_without_font_face` is an error
+   * — and `document.fonts.ready` is part of the capture barrier. Naming a system family
+   * here only invites a non-deterministic substitution on a machine that happens to have
+   * it, which is exactly what bundling the face is meant to prevent.
+   */
+  --family: "NotoSansJP", sans-serif;
+  --weight-regular: 400;
+  --weight-bold: 700;
+  --line-height-tight: 1.25;
+  --line-height-body: 1.6;
+  /* Japanese needs a little air between kana and kanji at display sizes. */
+  --tracking: 0.02em;
+
+  /* Motion constants, in seconds — read by src/blocks/*.js. */
+  --enter-seconds: 0.5;
+  --stagger-seconds: 0.3;
+  --rise-from: 28px;
+}
+
+/*
+ * FONTS — bundled rather than fetched from Google Fonts so renders stay offline.
+ *
+ * A local @font-face is not merely supported, it is required: the lint rule
+ * `font_family_without_font_face` is an error, because a family the renderer cannot supply
+ * falls back to a default face — which for Japanese means tofu. `document.fonts.ready` is
+ * part of the capture barrier, so the first frame waits for these.
+ *
+ * Paths are PROJECT-ROOT-RELATIVE, not relative to this file. Everything a composition
+ * loads resolves against the document base URL, which is /index.html at the project root.
+ * A composition cannot reference anything above the project root at all.
+ */
+@font-face {
+  font-family: "NotoSansJP";
+  src: url("../assets/fonts/NotoSansJP-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "NotoSansJP";
+  src: url("../assets/fonts/NotoSansJP-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: block;
+}
+
+/*
+ * SURFACES — the old surfaceOf(). A scene sets data-surface and reads the generic names.
+ */
+[data-surface="ink"] {
+  --lift: var(--ink-lift);
+  --base: var(--ink-base);
+  --edge: var(--ink-edge);
+  --text: var(--ink-text);
+  --text-muted: var(--ink-text-muted);
+  --rule: var(--ink-rule);
+}
+
+[data-surface="paper"] {
+  --lift: var(--paper-lift);
+  --base: var(--paper-base);
+  --edge: var(--paper-edge);
+  --text: var(--paper-text);
+  --text-muted: var(--paper-text-muted);
+  --rule: var(--paper-rule);
+}
+
+/*
+ * CLIP — required on every timed element. The runtime toggles `visibility` from
+ * data-start/data-duration; never set or animate visibility yourself.
+ */
+.clip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  visibility: hidden;
+}
+
+/*
+ * BACKDROP — the old backdropStyle(). A low-contrast radial wash instead of a flat fill:
+ * enough to give the frame depth behind a letterboxed screenshot, not enough to read as a
+ * gradient.
+ */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 90% at 18% 12%, var(--lift) 0%, var(--base) 58%, var(--edge) 100%);
+}
+
+/*
+ * SCENE MEDIA — the explicit z-index is the fix from commit fc8edcb. The backdrop above is
+ * `position: absolute`, and a positioned sibling paints over every non-positioned one
+ * regardless of DOM order; left to default stacking the clip renders correctly and is then
+ * covered by the opaque wash. objectFit: contain is why media dimensions are never probed.
+ */
+.scene-media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1;
+}
+
+/* MARKER — the accent bar that anchors a title or marks a list item. */
+.marker {
+  width: var(--marker-width);
+  background-color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ── Scene layout: shared frame ──────────────────────────────────────────────── */
+.scene-body {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-inline: var(--margin);
+  font-family: var(--family);
+  z-index: 2;
+}
+
+/* ── title ───────────────────────────────────────────────────────────────────── */
+.title-stack {
+  display: flex;
+  gap: calc(var(--gap) + round(calc(8 * var(--k) * 1px), 1px));
+}
+
+.title-marker {
+  height: var(--title-marker-height);
+  transform-origin: top;
+}
+
+.title-words {
+  display: flex;
+  flex-direction: column;
+  gap: round(calc(20 * var(--k) * 1px), 1px);
+}
+
+.display {
+  font-size: var(--display);
+  font-weight: var(--weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--tracking);
+  color: var(--text);
+}
+
+.sub {
+  font-size: var(--heading);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--tracking);
+  color: var(--text-muted);
+}
+
+/* ── bullets ─────────────────────────────────────────────────────────────────── */
+.bullets-stack {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--gap);
+}
+
+.heading {
+  font-size: var(--title);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking);
+  color: var(--text);
+}
+
+/* Hairline under the heading: it marks where the list begins. */
+.hairline {
+  height: var(--hairline);
+  width: var(--hairline-width);
+  background-color: var(--accent);
+  margin-bottom: var(--gap);
+  transform-origin: left;
+}
+
+.bullet {
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  font-size: var(--body);
+  line-height: var(--line-height-body);
+  letter-spacing: var(--tracking);
+  color: var(--text);
+}
+
+.bullet .marker {
+  height: var(--body);
+}
+
+/* ── outro ───────────────────────────────────────────────────────────────────── */
+.outro-stack {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: calc(var(--gap) + round(calc(12 * var(--k) * 1px), 1px));
+}
+
+.outro-line {
+  display: flex;
+  gap: calc(var(--gap) + round(calc(8 * var(--k) * 1px), 1px));
+}
+
+.outro-marker {
+  height: calc(var(--title) * var(--line-height-tight));
+}
+
+.message {
+  font-size: var(--title);
+  font-weight: var(--weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--tracking);
+  color: var(--text);
+}
+
+/* A rule under the address, not a box around it. */
+.url {
+  margin-left: calc(var(--marker-width) + var(--gap) + round(calc(8 * var(--k) * 1px), 1px));
+  font-size: var(--body);
+  letter-spacing: var(--tracking);
+  color: var(--text-muted);
+  border-bottom: var(--hairline) solid var(--accent);
+  padding-bottom: round(calc(10 * var(--k) * 1px), 1px);
+  align-self: flex-start;
+}
+
+/* ── screenshot ──────────────────────────────────────────────────────────────── */
+.screenshot-caption {
+  position: absolute;
+  /* Sits above the narration caption band, clear of the title-safe area. */
+  bottom: var(--lower-third);
+  left: var(--margin);
+  right: var(--margin);
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  font-family: var(--family);
+  font-weight: var(--weight-bold);
+  font-size: var(--heading);
+  letter-spacing: var(--tracking);
+  /*
+   * Follows the scene's own surface. The Remotion original hardcoded the ink text colour
+   * here, which rendered near-white on near-white under the advertised surface="paper".
+   */
+  color: var(--text);
+  text-shadow: 0 round(calc(4 * var(--k) * 1px), 1px) round(calc(28 * var(--k) * 1px), 1px)
+    var(--caption-shadow);
+  z-index: 2;
+}
+
+.screenshot-caption .marker {
+  height: var(--heading);
+}
+
+/* ── narration captions ──────────────────────────────────────────────────────── */
+/*
+ * ONE element per caption page, not a zone wrapping a box. The root composition is built
+ * only from sub-compositions, and the linter flags any timed element at the root that
+ * contains nested markup (`nested_structure_needs_subcomposition`). Captions are authored
+ * as flat siblings in index.html, so each one has to be childless — hence the box and its
+ * centring collapsed into a single rule.
+ *
+ * width: fit-content + the 50% / -50% pair reproduces the original's shrink-wrapped box
+ * centred inside a 1400px zone.
+ *
+ * Captions deliberately ignore --text / --base: they sit over arbitrary footage, so they
+ * always use the fixed scrim pairing from video/tokens.css rather than the scene surface.
+ */
+.caption {
+  position: absolute;
+  /*
+   * .clip supplies the full-frame box (top: 0; height: 100%) that a scene wants and a
+   * caption does not. Leaving them set over-constrains the box — CSS then ignores
+   * `bottom` — and the caption renders as a full-height column pinned to the top. Reset
+   * both here; .clip is still needed for the runtime's visibility contract.
+   */
+  top: auto;
+  height: auto;
+  bottom: var(--caption-zone-bottom);
+  left: 50%;
+  translate: -50% 0;
+  width: fit-content;
+  max-width: var(--caption-zone-width);
+  visibility: hidden;
+  background-color: var(--caption-bg);
+  border-radius: var(--caption-radius);
+  color: var(--caption-text);
+  font-family: var(--family);
+  font-size: var(--caption-text-size);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--tracking);
+  line-height: var(--caption-line-height);
+  padding: var(--caption-padding-block) var(--caption-padding-inline);
+  text-align: center;
+  text-wrap: balance;
+  white-space: pre-wrap;
+  z-index: 10;
+}

@@ -26,15 +26,12 @@ const main = async () => {
           errors.push(`scene ${scene.id}: screencast asset "${scene.asset}" is not a video`);
         } else {
           if (a.warning) errors.push(`scene ${scene.id}: ${a.warning}`);
-          const needed = scene.trimBeforeSeconds + scene.minSeconds * scene.playbackRate;
-          if (needed > a.durationInSeconds) {
-            errors.push(
-              `scene ${scene.id}: needs ${needed.toFixed(2)}s of "${scene.asset}" ` +
-                `(trimBeforeSeconds ${scene.trimBeforeSeconds} + minSeconds ${scene.minSeconds} ` +
-                `x playbackRate ${scene.playbackRate}) but the clip is only ` +
-                `${a.durationInSeconds.toFixed(2)}s`,
-            );
-          }
+          // The footage budget is NOT checked here any more. It used to read
+          // `trimBeforeSeconds + minSeconds x playbackRate`, but minSeconds is only a
+          // floor: a scene is actually as long as its narration needs, which is not known
+          // until `pnpm voice` has run. That made the check optimistic — the splash scene
+          // reported ~0.95s of headroom while really having 0.09s. The exact version lives
+          // in scripts/check-timing.ts, which runs after voice and has the real durations.
         }
       } else if (scene.type === 'screenshot' && a.kind !== 'image') {
         errors.push(`scene ${scene.id}: screenshot asset "${scene.asset}" is not an image`);

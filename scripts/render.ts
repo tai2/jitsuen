@@ -1,6 +1,5 @@
+import {spawn} from 'node:child_process';
 import {mkdir, readFile, writeFile} from 'node:fs/promises';
-import {bundle} from '@remotion/bundler';
-import {ensureBrowser, renderMedia, selectComposition} from '@remotion/renderer';
 import {StoryboardSchema} from './lib/storyboard-schema.ts';
 import {getSpeakerInfo, getSpeakers} from './lib/voicevox.ts';
 
@@ -29,6 +28,15 @@ const credits = async (styleId: number) => {
   }
 };
 
+const run = (command: string, args: string[]): Promise<void> =>
+  new Promise((resolve, reject) => {
+    const child = spawn(command, args, {stdio: 'inherit'});
+    child.on('error', reject);
+    child.on('close', (code) =>
+      code === 0 ? resolve() : reject(new Error(`${command} exited with code ${code}`)),
+    );
+  });
+
 const main = async () => {
   const sb = StoryboardSchema.parse(JSON.parse(await readFile('video/storyboard.json', 'utf8')));
   const narration = JSON.parse(
@@ -36,33 +44,44 @@ const main = async () => {
   ) as NarrationManifest;
 
   await mkdir('out', {recursive: true});
-  await ensureBrowser();
 
-  const serveUrl = await bundle({entryPoint: 'src/index.ts'});
-  const inputProps = {scenes: sb.scenes};
-
-  // inputProps must go to BOTH calls, or calculateMetadata resolves against the wrong props
-  // and the duration silently differs from what gets rendered.
-  const composition = await selectComposition({serveUrl, id: 'DemoVideo', inputProps});
-
-  const {slowestFrames} = await renderMedia({
-    composition,
-    serveUrl,
-    inputProps,
-    codec: 'h264',
-    outputLocation: `out/${sb.project}.mp4`,
-    // remotion.config.ts does NOT apply to the Node APIs — every option is explicit here.
-    overwrite: true,
-    imageFormat: 'jpeg',
-    jpegQuality: 90,
-    crf: 18,
-    audioCodec: 'aac',
-    sampleRate: 48000,
-    enforceAudioTrack: true,
-    timeoutInMilliseconds: 60000,
-    onProgress: ({progress}) => process.stdout.write(`\r${(progress * 100).toFixed(1)}%`),
-  });
-  console.log('\nslowest frames:', slowestFrames?.slice(0, 5));
+  /*
+   * The CLI is spawned rather than the producer being imported, for two reasons.
+   *
+   * One: @hyperframes/producer pulls full puppeteer and downloads a second Chromium at
+   * install time. The CLI reaches the same renderer through the browser it already
+   * manages, and puppeteer-core — which downloads nothing — is all that ends up in the
+   * dependency tree.
+   *
+   * Two: `pnpm render` and `pnpm studio` now go through one code path. The Remotion build
+   * had a real divergence here — remotion.config.ts did not apply to the Node APIs, so
+   * Studio ran rspack while the render ran webpack, and setDefaultPremountInSeconds could
+   * not be expressed on renderMedia() at all. Neither trap exists on this side; every
+   * option below is a flag, and the flags are the whole configuration.
+   */
+  await run('hyperframes', [
+    'render',
+    '.',
+    '--output',
+    `out/${sb.project}.mp4`,
+    '--format',
+    'mp4',
+    '--fps',
+    String(sb.fps),
+    '--crf',
+    '18',
+    // Source-video frames are extracted as PNG rather than JPEG. Every clip here is a
+    // phone screen recording — fine UI text and flat colour, which is exactly what JPEG
+    // extraction smears.
+    '--video-frame-format',
+    'png',
+    // One worker: each is a separate Chrome process, and a single one keeps the output
+    // reproducible run to run.
+    '--workers',
+    '1',
+    // Fail on a lint error rather than rendering something known to be wrong.
+    '--strict',
+  ]);
 
   const {name, policy} = await credits(sb.voice.styleId);
   await writeFile(

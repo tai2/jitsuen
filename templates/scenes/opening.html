@@ -1,0 +1,21 @@
+<!--
+  AUTHORED — scene "opening" (title). One sub-composition per scene; see index.html.
+  The length passed to titleMotion is a literal and pnpm check re-derives it.
+-->
+<template id="sc-opening-template">
+  <div data-composition-id="sc-opening" data-width="1920" data-height="1080" data-surface="ink">
+    <div class="backdrop"></div>
+    <div class="scene-body">
+      <div class="title-stack">
+        <div class="marker title-marker"></div>
+        <div class="title-words">
+          <div class="display">タイトル</div>
+          <div class="sub">サブタイトル</div>
+        </div>
+      </div>
+    </div>
+    <script>
+      window.__timelines["sc-opening"] = window.jitsuen.titleMotion("sc-opening", 3.0);
+    </script>
+  </div>
+</template>

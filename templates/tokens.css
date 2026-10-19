@@ -1,0 +1,86 @@
+/*
+ * The DEFAULT visual identity for a NEW video. `pnpm new` copies this to video/tokens.css;
+ * editing it changes the starting point for FUTURE videos, while video/tokens.css only
+ * affects the video in front of you.
+ *
+ * Mechanism lives in src/theme.css; only values live here, so a reference-match touches
+ * one file and never a scene sub-composition.
+ *
+ * TO MATCH A REFERENCE: change the surface palettes, --accent and the --size-* scale.
+ */
+
+:root {
+  /*
+   * Must equal min(width, height) from video/storyboard.json — pnpm check asserts it.
+   * Every --size-* below is authored against this short edge and scaled by --k in
+   * src/theme.css, which is what makes one scale work for a 1920x1080 landscape video and
+   * a 1080x2348 portrait one alike.
+   */
+  --short-edge: 1080;
+
+  /* ── Surface: ink ─────────────────────────────────────────────────────────── */
+  --ink-lift: #1b5557;
+  --ink-base: #144647;
+  --ink-edge: #0c3133;
+  --ink-text: #f4efe6;
+  --ink-text-muted: #b69f76;
+  --ink-rule: rgba(244, 239, 230, 0.2);
+
+  /* ── Surface: paper ───────────────────────────────────────────────────────── */
+  --paper-lift: #fbf8f2;
+  --paper-base: #f2ece1;
+  --paper-edge: #e2d9c8;
+  --paper-text: #103335;
+  --paper-text-muted: #7a6f5c;
+  --paper-rule: rgba(16, 51, 53, 0.18);
+
+  /* One accent, rationed: it only ever appears as a marker bar or a hairline. */
+  --accent: #ebff2f;
+
+  /*
+   * Captions sit over arbitrary footage, so they do NOT follow the surface — always a dark
+   * scrim with light text, the only pairing legible over both bright and dark screenshots.
+   *
+   * Keep the scrim opaque enough to survive a bright screenshot underneath.
+   */
+  --caption-bg: rgba(8, 31, 32, 0.86);
+  /*
+   * The drop shadow behind a screenshot scene's own caption, which sits directly on
+   * footage with no scrim behind it. A token rather than a literal in src/theme.css so a
+   * reference-match can soften it.
+   */
+  --caption-shadow: rgba(0, 0, 0, 0.8);
+  --caption-text: #f4efe6;
+  --caption-line-height: 1.45;
+
+  /*
+   * Every length is given for a 1080px SHORT EDGE and scaled to the real frame by --k.
+   *
+   * Before raising the type scale, check the longest real string against
+   * width − 2 × --size-margin at the new size.
+   *
+   * Unitless on purpose: src/theme.css multiplies each by --k and by 1px. A unit here
+   * would make `round(calc(...), 1px)` a type error and silently drop the declaration.
+   */
+  --size-display: 96;
+  --size-title: 72;
+  --size-heading: 60;
+  --size-body: 44;
+  --size-label: 30;
+  --size-caption-text: 44;
+  --size-margin: 96;
+  --size-gap: 30;
+  --size-marker-width: 6;
+  --size-hairline: 2;
+  /* Where a scene's own caption sits, clear of the narration caption band. */
+  --size-lower-third: 360;
+  --size-caption-padding-block: 14;
+  --size-caption-padding-inline: 26;
+  --size-caption-radius: 4;
+  /* The narration caption band: a centred box, clear of the title-safe area. */
+  --size-caption-zone-width: 1400;
+  --size-caption-zone-bottom: 140;
+  /* Title marker height and the bullets hairline width — both authored lengths. */
+  --size-title-marker-height: 176;
+  --size-hairline-width: 140;
+}

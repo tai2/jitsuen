@@ -1,0 +1,9 @@
+# Directories the static server should not walk when serving the project root.
+# src/ and assets/ are deliberately NOT here — the composition loads src/theme.css,
+# src/blocks/*.js and everything under assets/ through this server, and a composition
+# cannot reference anything above the project root, so they have to stay reachable.
+node_modules/
+out/
+.cache/
+templates/
+video/reference/
