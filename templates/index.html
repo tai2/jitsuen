@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Must match the composition dimensions in video/storyboard.json. -->
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>sample</title>
+
+    <!--
+      AUTHORED FILE — written by Claude Code, kept editable by hand. Gitignored, because it
+      describes ONE video. It sits at the repo root rather than under video/ only because
+      HyperFrames requires the entry composition to be index.html at the project root, and
+      a composition cannot reference anything above its project root.
+
+      Every data-start and data-duration is a literal on purpose: Studio rewrites these when
+      you drag a scene, and a loop over the storyboard would be shorter and would kill all
+      of that. `pnpm check` re-derives every one from video/storyboard.json plus
+      video/narration.json and fails with the corrected numbers.
+
+      THREE LANES, not three containers. data-track-index groups the timeline into rows and
+      orders layering; CSS z-index is what actually paints. Scenes are lane 1, narration
+      lane 2, captions lane 3.
+
+      This sample has two silent scenes and no narration, so lanes 2 and 3 are empty. Add an
+      <audio id="<scene>-narration"> per narrated scene — an <audio> without an id is
+      skipped by the mixer and the render comes out silent with no error.
+    -->
+
+    <script src="assets/vendor/gsap.min.js"></script>
+    <link rel="stylesheet" href="src/theme.css" />
+    <link rel="stylesheet" href="video/tokens.css" />
+    <script src="src/blocks/title.js"></script>
+    <script src="src/blocks/bullets.js"></script>
+    <script src="src/blocks/outro.js"></script>
+    <script src="src/blocks/screencast.js"></script>
+    <script src="src/blocks/screenshot.js"></script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /*
+       * --vw / --vh must be on :root, not on #stage: src/theme.css computes --k on :root,
+       * and custom properties inherit downward only.
+       */
+      :root {
+        --vw: 1920;
+        --vh: 1080;
+      }
+
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: var(--ink-edge);
+      }
+
+      #stage {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="stage"
+      data-composition-id="main"
+      data-start="0"
+      data-width="1920"
+      data-height="1080"
+      data-fps="30"
+    >
+      <!-- ── Lane 1: scenes ──────────────────────────────────────────────────── -->
+      <div id="opening" data-composition-id="sc-opening" data-composition-src="video/scenes/opening.html" data-start="0.000000" data-track-index="1"></div>
+      <div id="outro" data-composition-id="sc-outro" data-composition-src="video/scenes/outro.html" data-start="3.000000" data-track-index="1"></div>
+
+      <!-- ── Lane 2: narration (none in this sample) ─────────────────────────── -->
+
+      <!-- ── Lane 3: captions (none in this sample) ──────────────────────────── -->
+    </div>
+
+    <script>
+      /*
+       * The master timeline. It carries no tweens of its own: every scene is a
+       * sub-composition with its own timeline, and the framework nests each one at its
+       * host's data-start automatically.
+       *
+       * The one thing this timeline MUST do is carry the composition's length. A
+       * composition's duration is tl.duration(), not an attribute; there is no
+       * data-duration on a composition at all. Without the tl.set() below the video would
+       * end at whatever the last tween happened to reach.
+       *
+       * Registration goes LAST and is fully synchronous.
+       */
+      var tl = gsap.timeline({paused: true});
+      tl.set({}, {}, 5.0);
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

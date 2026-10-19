@@ -15,7 +15,15 @@ import {join} from 'node:path';
  * A fresh clone has no video/ and will not compile until this has run once.
  */
 
-const SEEDED = ['brief.md', 'storyboard.json', 'narration.json', 'tokens.ts', 'DemoVideo.tsx'];
+const SEEDED = ['brief.md', 'storyboard.json', 'narration.json', 'tokens.css'];
+const SEEDED_SCENES = ['opening.html', 'outro.html'];
+/*
+ * The root composition is seeded to the REPO ROOT, not into video/. HyperFrames requires
+ * the entry composition to be index.html at the project root, and a composition cannot
+ * reference anything above its project root — so src/ and assets/ have to be reachable
+ * from it. It is gitignored like everything else about one video.
+ */
+const ROOT_SEEDED: [string, string][] = [['index.html', 'index.html']];
 const MEDIA_DIRS = ['assets', 'reference'];
 const DERIVED = ['video/assets.json'];
 
@@ -42,6 +50,17 @@ const main = async () => {
   for (const file of SEEDED) {
     await copyFile(join('templates', file), join('video', file));
     console.log(`seeded   video/${file}`);
+  }
+
+  await mkdir(join('video', 'scenes'), {recursive: true});
+  for (const file of SEEDED_SCENES) {
+    await copyFile(join('templates', 'scenes', file), join('video', 'scenes', file));
+    console.log(`seeded   video/scenes/${file}`);
+  }
+
+  for (const [from, to] of ROOT_SEEDED) {
+    await copyFile(join('templates', from), to);
+    console.log(`seeded   ${to}`);
   }
 
   for (const derived of DERIVED) {

@@ -8,7 +8,7 @@ path of anything wrong (`scenes.3.bullets`), so let it correct you rather than g
 
 | Key | Notes |
 |---|---|
-| `project` | kebab-case. Names the output: `out/<project>.mp4`, `public/voiceover/<project>/`. |
+| `project` | kebab-case. Names the output: `out/<project>.mp4`, `assets/voiceover/<project>/`. |
 | `fps` | 24, 30 or 60. Default 30. |
 | `width` / `height` | Integers, **must be even** (h264/yuv420p). 1920×1080 is the norm. |
 | `voice.styleId` | A *style* id, not a speaker id. `curl -s localhost:50021/speakers`. |
@@ -21,8 +21,9 @@ path of anything wrong (`scenes.3.bullets`), so let it correct you rather than g
 ## Look
 
 The storyboard carries no design fields on purpose. Colour, type and spacing live in
-`video/tokens.ts` and apply to every scene at once — see SKILL.md stage 3. The one visual choice
-a scene makes for itself is `surface`, authored on the JSX node in `DemoVideo.tsx`:
+`video/tokens.css` and apply to every scene at once — see SKILL.md stage 3. The one visual
+choice a scene makes for itself is `data-surface`, authored on the scene's sub-composition
+root in `video/scenes/<id>.html`:
 `ink` (default, dark) or `paper` (light), useful when a run of light product screenshots
 would otherwise fight a dark frame.
 

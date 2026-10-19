@@ -1,18 +1,18 @@
 {
   "name": "jitsuen",
   "version": "1.0.0",
-  "description": "Claude Code-driven demo video pipeline (Remotion + VOICEVOX)",
+  "description": "Claude Code-driven demo video pipeline (HyperFrames + VOICEVOX)",
   "repository": {},
   "license": "UNLICENSED",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.25.0",
   "engines": {
-    "node": "^20.19.0 || ^22.13.0 || >=24"
+    "node": ">=22"
   },
   "scripts": {
-    "dev": "remotion studio",
-    "studio": "remotion studio",
+    "dev": "hyperframes preview .",
+    "studio": "hyperframes preview .",
     "engine": "scripts/voicevox-engine.sh start",
     "engine:stop": "scripts/voicevox-engine.sh stop",
     "voices": "node --experimental-strip-types scripts/list-voices.ts",
@@ -23,28 +23,25 @@
     "check": "node --experimental-strip-types scripts/check-timing.ts",
     "render": "node --experimental-strip-types scripts/render.ts",
     "typecheck": "tsc",
-    "lint": "eslint src scripts && tsc"
+    "lint": "hyperframes lint . && eslint src scripts && tsc",
+    "browser": "hyperframes browser ensure",
+    "verify": "hyperframes check .",
+    "clean": "hyperframes clean"
   },
   "dependencies": {
-    "@remotion/bundler": "4.0.536",
-    "@remotion/captions": "4.0.536",
-    "@remotion/cli": "4.0.536",
-    "@remotion/fonts": "4.0.536",
-    "@remotion/media": "4.0.536",
-    "@remotion/renderer": "4.0.536",
-    "@remotion/transitions": "4.0.536",
-    "mediabunny": "1.61.3",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "remotion": "4.0.536"
+    "@hyperframes/core": "0.8.174",
+    "gsap": "3.14.2",
+    "hyperframes": "0.8.174",
+    "mediabunny": "1.61.3"
   },
   "devDependencies": {
-    "@remotion/eslint-config-flat": "4.0.536",
-    "@types/react": "19.2.7",
+    "@eslint/js": "10.0.1",
+    "@types/node": "26.6.5",
     "@types/web": "0.0.166",
     "eslint": "10.12.0",
     "prettier": "3.8.1",
     "typescript": "5.9.3",
+    "typescript-eslint": "8.71.2",
     "zod": "4.5.4"
   }
 }

@@ -11,11 +11,21 @@ out/
 # Synthesis cache and engine runtime state — regenerable, content-addressed.
 .cache
 
-# Generated narration WAVs. Large and fully regenerable from narration.json + the engine.
-public/voiceover
+# HyperFrames working state: check/snapshot artifacts, render history, and the authoring
+# proxy cache it transcodes browser-hostile codecs into. All regenerable.
+.hyperframes/
+.transcode-cache/
 
-# Mirror of input/assets/, rebuilt by `pnpm ingest` so staticFile() can reach the media.
-public/assets
+# The generated serving tree: media mirrored from video/assets/, narration WAVs from
+# VOICEVOX, the bundled fonts and the vendored GSAP build. All of it is rebuilt by
+# `pnpm ingest` and `pnpm voice`; none of it is a source of truth.
+assets/
+
+# The authored root composition. It holds this video's scene mounts and narration with
+# their literal timings, so it is per-video content like everything under video/ — it just
+# has to sit at the project root, because HyperFrames requires the entry to be index.html
+# and a composition cannot reach above its project root.
+/index.html
 
 # Everything about the CURRENT video: the brief, the storyboard, the narration manifest,
 # the theme tokens, the authored composition and the source media. It is project-specific

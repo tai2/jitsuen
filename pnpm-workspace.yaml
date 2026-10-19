@@ -3,9 +3,15 @@
 # exits non-zero until every skipped build is explicitly decided, so each package below
 # is an explicit true/false rather than an allowlist of names.
 #
-# esbuild: false matches what `create-video` itself wrote into package.json
-# (`allowScripts: {esbuild: false}`). esbuild 0.28 resolves its platform binary through
-# optionalDependencies, which pnpm installs directly, so the postinstall has nothing to
-# do here. Verified by an actual `remotion bundle` + render, not assumed.
+# esbuild is still in the tree — the HyperFrames CLI pulls it — and its postinstall stays
+# disabled: esbuild resolves its platform binary through optionalDependencies, which pnpm
+# installs directly, so the script has nothing to do here. Verified by an actual
+# `pnpm render` to completion, not assumed.
 allowBuilds:
   esbuild: false
+minimumReleaseAgeExclude:
+  - '@hyperframes/core@0.8.174'
+  - '@hyperframes/lint@0.8.174'
+  - '@hyperframes/parsers@0.8.174'
+  - '@hyperframes/studio-server@0.8.174'
+  - hyperframes@0.8.174
