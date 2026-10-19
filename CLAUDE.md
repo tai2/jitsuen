@@ -41,6 +41,12 @@ Claude Code is the planner and author; every mechanical step is a deterministic 
 - Derive frames from `useVideoConfig().fps` inline, never a module-level FPS constant.
   The one exception is `COMPOSITION_FPS` in `src/metadata.ts`, which `calculateMetadata`
   needs because it cannot call hooks — keep it equal to the `fps` on the `<Composition>`.
+- `width`/`height`/`fps` are hand-mirrored in three places: `input/storyboard.json`, the
+  `<Composition>` registrations in `src/Root.tsx`, and `COMPOSITION_FPS`. `Root.tsx` governs
+  the render; the scripts bake frame numbers from the storyboard's `fps`. Change one and you
+  change all three — `pnpm validate` and `pnpm check` both refuse a mismatch before anything
+  else (`scripts/lib/composition-config.ts`), because an fps mismatch is self-consistent to
+  every other check and only surfaces as a desynced mp4.
 - Round each timeline boundary from a running total of seconds. Never sum per-scene
   `Math.ceil` — measured at 27 frames (0.9 s) of drift over a 5-minute video.
 - Give every scene node `name="<scene id>"`. `pnpm check` finds it by that and nothing else.

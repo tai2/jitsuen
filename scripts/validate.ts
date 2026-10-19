@@ -1,10 +1,22 @@
 import {readFile} from 'node:fs/promises';
 import type {Asset} from './ingest-assets.ts';
+import {checkCompositionConfig} from './lib/composition-config.ts';
 import {StoryboardSchema} from './lib/storyboard-schema.ts';
 import {getSpeakers} from './lib/voicevox.ts';
 
 const main = async () => {
   const sb = StoryboardSchema.parse(JSON.parse(await readFile('input/storyboard.json', 'utf8')));
+
+  // First gate, and a hard stop: `pnpm voice` bakes caption cue frames at sb.fps and
+  // `pnpm check` derives the expected timeline from it, so validating anything else
+  // against a format the render will not use is validating the wrong video.
+  const configProblems = await checkCompositionConfig(sb);
+  if (configProblems.length > 0) {
+    console.error(configProblems.map((p) => `✗ ${p}`).join('\n'));
+    console.error('\nReconcile the format, then re-run. src/Root.tsx governs the render.');
+    process.exit(1);
+  }
+
   const {assets} = JSON.parse(await readFile('input/assets.json', 'utf8')) as {
     assets: Record<string, Asset>;
   };
